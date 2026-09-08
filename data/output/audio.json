@@ -1,0 +1,20 @@
+{
+    "fuente": "audio",
+    "transcripcion": "paciente Juan Pérez, edad 35 años, género, masculino, diagnóstico, migraña, tratamiento, acetaminofeng 500 miligramos.",
+    "resumen": "El paciente Juan Pérez, de 35 años, diagnosticado con migraña, está siendo tratado con acetaminofén 500 miligramos.",
+    "temas_detectados": [
+        "paciente",
+        "diagnóstico",
+        "tratamiento",
+        "migraña",
+        "acetaminofén"
+    ],
+    "datos_relevantes": {
+        "nombre_paciente": "Juan Pérez",
+        "edad": "35 años",
+        "genero": "masculino",
+        "diagnostico": "migraña",
+        "tratamiento": "acetaminofeng 500 miligramos"
+    },
+    "nivel_confianza": "1.0"
+}

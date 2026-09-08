@@ -1,0 +1,22 @@
+{
+    "titulo": "Informe de Análisis de Fuentes",
+    "resumen_ejecutivo": "Este informe consolida la información procedente de una imagen y un audio. La imagen ilustra el proceso de conversión de imágenes a texto mediante OCR, identificando objetos relevantes y un sitio web. El audio proporciona detalles sobre un paciente llamado Juan Pérez, de 35 años, diagnosticado con migraña y tratado con acetaminofén 500 miligramos.",
+    "hallazgos_principales": [
+        "Se identifica un proceso de OCR (Reconocimiento Óptico de Caracteres) utilizando una imagen.",
+        "El paciente Juan Pérez, de 35 años, fue diagnosticado con migraña y tratado con acetaminofén 500 miligramos."
+    ],
+    "informacion_por_fuente": {
+        "imagen": [
+            "Ilustración que explica cómo convertir una imagen a texto utilizando OCR (Reconocimiento Óptico de Caracteres).",
+            "Objetos detectados: laptop, documento, libro, flecha, persona, icono de lupa, escritorio",
+            "URL_sitio_web: Imagenaxtexto.io"
+        ],
+        "audio": [
+            "paciente Juan Pérez, edad 35 años, género, masculino, diagnóstico, migraña, tratamiento, acetaminofeng 500 miligramos."
+        ]
+    },
+    "coincidencias_relevantes": [],
+    "contradicciones_detectadas": [],
+    "conclusion": "La información proporcionada por la imagen y el audio complementarios describe un caso de OCR y el diagnóstico y tratamiento de un paciente.",
+    "nivel_confianza_general": "alto"
+}

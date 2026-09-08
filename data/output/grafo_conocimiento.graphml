@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d2" for="edge" attr.name="relacion" attr.type="string" />
+  <key id="d1" for="node" attr.name="tipo" attr.type="string" />
+  <key id="d0" for="node" attr.name="nombre" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="E1">
+      <data key="d0">OCR</data>
+      <data key="d1">Tecnología</data>
+    </node>
+    <node id="E2">
+      <data key="d0">Imagenaxtexto.io</data>
+      <data key="d1">Sitio Web</data>
+    </node>
+    <node id="E3">
+      <data key="d0">Juan Pérez</data>
+      <data key="d1">Paciente</data>
+    </node>
+    <node id="E4">
+      <data key="d0">Migraña</data>
+      <data key="d1">Enfermedad</data>
+    </node>
+    <node id="E5">
+      <data key="d0">Acetaminofén</data>
+      <data key="d1">Medicamento</data>
+    </node>
+    <node id="E6">
+      <data key="d0">500 miligramos</data>
+      <data key="d1">Dosis</data>
+    </node>
+    <edge source="E1" target="E2">
+      <data key="d2">Utilizado para</data>
+    </edge>
+    <edge source="E3" target="E4">
+      <data key="d2">Es</data>
+    </edge>
+    <edge source="E3" target="E6">
+      <data key="d2">Tiene edad</data>
+    </edge>
+    <edge source="E3" target="E5">
+      <data key="d2">Tratado con</data>
+    </edge>
+  </graph>
+</graphml>

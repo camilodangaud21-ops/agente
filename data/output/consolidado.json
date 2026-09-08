@@ -1,0 +1,21 @@
+{
+    "fuentes": [
+        "imagen",
+        "audio"
+    ],
+    "resumen_integrado": "La imagen describe el proceso de convertir imágenes a texto usando OCR. El audio proporciona información sobre un paciente llamado Juan Pérez, de 35 años, diagnosticado con migraña y tratado con acetaminofén 500 miligramos.",
+    "coincidencias": [],
+    "informacion_exclusiva": {
+        "imagen": [
+            "Ilustración que explica cómo convertir una imagen a texto utilizando OCR (Reconocimiento Óptico de Caracteres).",
+            "objetos detectados: laptop, documento, libro, flecha, persona, icono de lupa, escritorio",
+            "URL_sitio_web: Imagenaxtexto.io"
+        ],
+        "audio": [
+            "paciente Juan Pérez, edad 35 años, género, masculino, diagnóstico, migraña, tratamiento, acetaminofeng 500 miligramos."
+        ]
+    },
+    "posibles_contradicciones": [],
+    "datos_consolidados": {},
+    "nivel_confianza": "alto"
+}

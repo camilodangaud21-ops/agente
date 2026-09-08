@@ -1,0 +1,56 @@
+{
+    "entidades": [
+        {
+            "id": "E1",
+            "nombre": "OCR",
+            "tipo": "Tecnología"
+        },
+        {
+            "id": "E2",
+            "nombre": "Imagenaxtexto.io",
+            "tipo": "Sitio Web"
+        },
+        {
+            "id": "E3",
+            "nombre": "Juan Pérez",
+            "tipo": "Paciente"
+        },
+        {
+            "id": "E4",
+            "nombre": "Migraña",
+            "tipo": "Enfermedad"
+        },
+        {
+            "id": "E5",
+            "nombre": "Acetaminofén",
+            "tipo": "Medicamento"
+        },
+        {
+            "id": "E6",
+            "nombre": "500 miligramos",
+            "tipo": "Dosis"
+        }
+    ],
+    "relaciones": [
+        {
+            "origen": "E1",
+            "relacion": "Utilizado para",
+            "destino": "E2"
+        },
+        {
+            "origen": "E3",
+            "relacion": "Es",
+            "destino": "E4"
+        },
+        {
+            "origen": "E3",
+            "relacion": "Tiene edad",
+            "destino": "E6"
+        },
+        {
+            "origen": "E3",
+            "relacion": "Tratado con",
+            "destino": "E5"
+        }
+    ]
+}
