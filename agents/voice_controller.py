@@ -1,5 +1,7 @@
+import os
+
 from services.voice_recorder import (
-    grabar_audio_hasta_silencio
+    grabar_audio_mientras_enter
 )
 
 from services.whisper_service import (
@@ -18,20 +20,78 @@ from agents.agent_executor import (
     ejecutar_agente
 )
 
-from services.agent_result import resultado_exitoso
+from services.agent_result import (
+    resultado_exitoso,
+    resultado_error
+)
 
 from config.settings import (
     VOICE_TEMP_PATH,
-    VOICE_EXIT_KEYWORDS
+    VOICE_EXIT_KEYWORDS,
+    CONSOLIDADO_JSON_PATH,
+    DEFAULT_IMAGE_INPUT,
+    DEFAULT_AUDIO_INPUT
 )
+
+
+# ==========================================
+# VALIDACIÓN PREVIA A LA EJECUCIÓN
+# ==========================================
+
+def _archivo_requerido(agente: str, datos: dict):
+    """
+    Indica qué archivo de entrada necesita el agente para
+    poder ejecutar la acción, según lo que realmente usa
+    agent_executor.py internamente.
+
+    Devuelve None si esa acción no depende de un archivo
+    externo (o si el agente no está contemplado).
+    """
+
+    if agente in ("report_agent", "graph_agent", "knowledge_agent"):
+        return CONSOLIDADO_JSON_PATH
+
+    if agente == "image_agent":
+        return datos.get("ruta", DEFAULT_IMAGE_INPUT)
+
+    if agente == "audio_agent":
+        return datos.get("ruta", DEFAULT_AUDIO_INPUT)
+
+    return None
+
+
+def _confirmar_ejecucion(agente: str, accion: str, archivo_requerido) -> bool:
+    """
+    Muestra un resumen de la acción que está por ejecutarse
+    y pide confirmación explícita antes de continuar.
+
+    Devuelve True solo si el usuario confirma explícitamente
+    con "s" o "si". Cualquier otra respuesta (incluida una
+    respuesta vacía o ambigua) se trata como "no", por
+    seguridad.
+    """
+
+    print("\n================================")
+    print("     CONFIRMACIÓN REQUERIDA")
+    print("================================")
+    print(f"Agente a ejecutar : {agente}")
+    print(f"Acción            : {accion}")
+
+    if archivo_requerido:
+        print(f"Archivo necesario : {archivo_requerido} (encontrado ✅)")
+
+    respuesta = input(
+        "\n¿Deseás continuar? [s = sí / n = no]: "
+    ).strip().lower()
+
+    return respuesta in ("s", "si", "sí")
+
 
 def ejecutar_comando_voz():
     """
     Ejecuta el flujo completo de voz:
 
-    Micrófono
-        ↓
-    Detección automática de silencio
+    Micrófono (push-to-talk: mantener ENTER)
         ↓
     Whisper
         ↓
@@ -52,7 +112,7 @@ def ejecutar_comando_voz():
 
     print("\n🎙️ Paso 1/5 - Escuchando comando...")
 
-    grabar_audio_hasta_silencio(
+    grabar_audio_mientras_enter(
         ruta_salida=VOICE_TEMP_PATH
     )
 
@@ -121,6 +181,48 @@ def ejecutar_comando_voz():
 
     print("\n🚦 Decisión:")
     print(decision)
+
+    # ==========================================
+    # 4.5 VALIDACIÓN: ¿EXISTE EL ARCHIVO NECESARIO?
+    # ==========================================
+
+    archivo_requerido = _archivo_requerido(
+        decision["agente"],
+        decision["datos"]
+    )
+
+    if archivo_requerido and not os.path.exists(archivo_requerido):
+
+        print(
+            f"\n❌ No se puede continuar: falta el archivo "
+            f"requerido '{archivo_requerido}'."
+        )
+
+        return resultado_error(
+            agente=decision["agente"],
+            accion=decision["accion"],
+            error=f"No se encontró el archivo requerido: {archivo_requerido}",
+            datos=decision["datos"]
+        )
+
+    # ==========================================
+    # 4.6 CONFIRMACIÓN EXPLÍCITA DEL USUARIO
+    # ==========================================
+
+    if not _confirmar_ejecucion(
+        decision["agente"],
+        decision["accion"],
+        archivo_requerido
+    ):
+
+        print("\n🚫 Operación cancelada por el usuario.")
+
+        return resultado_error(
+            agente=decision["agente"],
+            accion=decision["accion"],
+            error="El usuario canceló la operación.",
+            datos=decision["datos"]
+        )
 
     # ==========================================
     # 5. EXECUTOR

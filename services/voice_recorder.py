@@ -1,6 +1,6 @@
 import os
 import queue
-
+import keyboard
 import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
@@ -205,6 +205,90 @@ def grabar_audio_hasta_silencio(
 
     print(
         "✅ Grabación finalizada."
+    )
+
+    print(
+        f"📁 Archivo: {ruta_salida}"
+    )
+
+    return ruta_salida
+
+def grabar_audio_mientras_enter(
+    ruta_salida: str,
+    samplerate: int = VOICE_SAMPLE_RATE,
+    canales: int = VOICE_CHANNELS,
+    bloque: int = VOICE_BLOCK_SIZE
+):
+    """
+    Graba audio mientras el usuario mantiene presionada
+    la tecla ENTER (push-to-talk).
+
+    Arranca a grabar en el instante en que se presiona ENTER,
+    y corta la grabación apenas se suelta.
+    """
+
+    print("\n🎙️ Mantén presionada la tecla ENTER para hablar...")
+
+    keyboard.wait("enter")
+
+    print("🔴 Grabando... (soltá ENTER para terminar)")
+
+    os.makedirs(
+        os.path.dirname(ruta_salida),
+        exist_ok=True
+    )
+
+    cola_audio = queue.Queue()
+    fragmentos = []
+
+    def callback(
+        indata,
+        frames,
+        time,
+        status
+    ):
+        if status:
+            print(f"⚠️ Audio: {status}")
+
+        cola_audio.put(
+            indata.copy()
+        )
+
+    dispositivo_entrada = _seleccionar_dispositivo_entrada()
+    if dispositivo_entrada is not None:
+        print(f"📻 Micrófono seleccionado: índice {dispositivo_entrada}")
+
+    with sd.InputStream(
+        samplerate=samplerate,
+        channels=canales,
+        blocksize=bloque,
+        device=dispositivo_entrada,
+        callback=callback
+    ):
+
+        while keyboard.is_pressed("enter"):
+            try:
+                datos = cola_audio.get(timeout=0.1)
+                fragmentos.append(datos)
+            except queue.Empty:
+                continue
+
+    print("⏹️ ENTER soltado. Grabación finalizada.")
+
+    if not fragmentos:
+        raise ValueError(
+            "No se grabó ningún audio (se soltó ENTER demasiado rápido)."
+        )
+
+    audio_final = np.concatenate(
+        fragmentos,
+        axis=0
+    )
+
+    write(
+        ruta_salida,
+        samplerate,
+        audio_final
     )
 
     print(

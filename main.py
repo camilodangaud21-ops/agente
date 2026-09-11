@@ -21,10 +21,6 @@ def main():
 
     while True:
 
-        input(
-            "Presiona ENTER para hablar..."
-        )
-
         try:
 
             resultado = ejecutar_comando_voz()
