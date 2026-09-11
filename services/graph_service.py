@@ -212,3 +212,80 @@ def construir_grafo_conocimiento(
         )
 
     return grafo
+
+def _nombre_valido_obsidian(nombre: str) -> str:
+    """
+    Limpia un nombre para que sirva como nombre de archivo
+    y como wikilink válido en Windows y en Obsidian.
+    """
+
+    caracteres_prohibidos = '<>:"/\\|?*[]'
+
+    limpio = nombre
+
+    for caracter in caracteres_prohibidos:
+        limpio = limpio.replace(caracter, "")
+
+    return limpio.strip()
+
+
+def exportar_a_obsidian(
+    grafo: nx.DiGraph,
+    carpeta_salida: str
+):
+    """
+    Exporta el grafo de conocimiento como notas de Obsidian:
+    una nota .md por cada entidad, con enlaces [[wikilink]]
+    hacia las entidades relacionadas. Al abrir la carpeta
+    como Vault en Obsidian, el grafo visual se arma solo.
+    """
+
+    os.makedirs(
+        carpeta_salida,
+        exist_ok=True
+    )
+
+    for nodo_id, atributos in grafo.nodes(data=True):
+
+        nombre = atributos.get("nombre", str(nodo_id))
+        tipo = atributos.get("tipo", "desconocido")
+
+        nombre_archivo = _nombre_valido_obsidian(nombre)
+
+        ruta = os.path.join(
+            carpeta_salida,
+            f"{nombre_archivo}.md"
+        )
+
+        lineas = []
+        lineas.append("---")
+        lineas.append(f"tipo: {tipo}")
+        lineas.append("---")
+        lineas.append(f"# {nombre}")
+        lineas.append("")
+
+        salientes = list(grafo.out_edges(nodo_id, data=True))
+
+        if salientes:
+            lineas.append("## Relaciones")
+            for _, destino_id, datos_arista in salientes:
+                relacion = datos_arista.get("relacion", "relacionado con")
+                nombre_destino = grafo.nodes[destino_id].get("nombre", str(destino_id))
+                nombre_destino_valido = _nombre_valido_obsidian(nombre_destino)
+                lineas.append(f"- {relacion} [[{nombre_destino_valido}]]")
+
+        entrantes = list(grafo.in_edges(nodo_id, data=True))
+
+        if entrantes:
+            lineas.append("")
+            lineas.append("## Referenciado por")
+            for origen_id, _, datos_arista in entrantes:
+                relacion = datos_arista.get("relacion", "relacionado con")
+                nombre_origen = grafo.nodes[origen_id].get("nombre", str(origen_id))
+                nombre_origen_valido = _nombre_valido_obsidian(nombre_origen)
+                lineas.append(f"- [[{nombre_origen_valido}]] {relacion} esta entidad")
+
+        with open(ruta, "w", encoding="utf-8") as archivo:
+            archivo.write("\n".join(lineas))
+
+    print(f"✅ {grafo.number_of_nodes()} notas exportadas a: {carpeta_salida}")

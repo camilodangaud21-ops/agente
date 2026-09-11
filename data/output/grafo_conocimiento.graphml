@@ -5,40 +5,61 @@
   <key id="d0" for="node" attr.name="nombre" attr.type="string" />
   <graph edgedefault="directed">
     <node id="E1">
-      <data key="d0">OCR</data>
-      <data key="d1">Tecnología</data>
+      <data key="d0">¿CÓMO CONVERTIR</data>
+      <data key="d1">Pregunta</data>
     </node>
     <node id="E2">
-      <data key="d0">Imagenaxtexto.io</data>
-      <data key="d1">Sitio Web</data>
+      <data key="d0">UNA IMAGEN</data>
+      <data key="d1">Concepto</data>
     </node>
     <node id="E3">
-      <data key="d0">Juan Pérez</data>
-      <data key="d1">Paciente</data>
+      <data key="d0">A TEXTO?</data>
+      <data key="d1">Pregunta</data>
     </node>
     <node id="E4">
-      <data key="d0">Migraña</data>
-      <data key="d1">Enfermedad</data>
+      <data key="d0">Imagenatexto.io</data>
+      <data key="d1">Sitio Web</data>
     </node>
     <node id="E5">
-      <data key="d0">Acetaminofén</data>
-      <data key="d1">Medicamento</data>
+      <data key="d0">mujer</data>
+      <data key="d1">Persona</data>
     </node>
     <node id="E6">
-      <data key="d0">500 miligramos</data>
-      <data key="d1">Dosis</data>
+      <data key="d0">ordenador portátil</data>
+      <data key="d1">Dispositivo</data>
+    </node>
+    <node id="E7">
+      <data key="d0">documento</data>
+      <data key="d1">Documento</data>
+    </node>
+    <node id="E8">
+      <data key="d0">icono de nube</data>
+      <data key="d1">Icono</data>
+    </node>
+    <node id="E9">
+      <data key="d0">icono de cámara</data>
+      <data key="d1">Icono</data>
     </node>
     <edge source="E1" target="E2">
-      <data key="d2">Utilizado para</data>
+      <data key="d2">pregunta sobre</data>
     </edge>
-    <edge source="E3" target="E4">
-      <data key="d2">Es</data>
+    <edge source="E3" target="E2">
+      <data key="d2">pregunta sobre</data>
     </edge>
-    <edge source="E3" target="E6">
-      <data key="d2">Tiene edad</data>
+    <edge source="E4" target="E1">
+      <data key="d2">relacionado con</data>
     </edge>
-    <edge source="E3" target="E5">
-      <data key="d2">Tratado con</data>
+    <edge source="E5" target="E6">
+      <data key="d2">utilizando</data>
+    </edge>
+    <edge source="E7" target="E6">
+      <data key="d2">utilizando</data>
+    </edge>
+    <edge source="E8" target="E2">
+      <data key="d2">relacionado con</data>
+    </edge>
+    <edge source="E9" target="E2">
+      <data key="d2">relacionado con</data>
     </edge>
   </graph>
 </graphml>

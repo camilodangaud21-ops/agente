@@ -1,7 +1,7 @@
 {
     "fuente": "imagen",
-    "tipo_contenido": "ilustracion",
-    "descripcion_general": "Ilustración que muestra el proceso de convertir una imagen a texto (OCR).",
+    "tipo_contenido": "ilustración",
+    "descripcion_general": "Ilustración que muestra cómo convertir una imagen a texto, destacando la tecnología OCR.",
     "texto_detectado": [
         "¿CÓMO CONVERTIR",
         "UNA IMAGEN",
@@ -10,14 +10,13 @@
     ],
     "objetos_detectados": [
         "mujer",
-        "ordenador",
-        "escritura",
-        "icono de nube",
+        "ordenador portátil",
         "documento",
-        "icono de lupa"
+        "icono de nube",
+        "icono de cámara"
     ],
     "datos_relevantes": {
-        "idioma": "español"
+        "tecnología": "OCR"
     },
     "nivel_confianza": "alto"
 }

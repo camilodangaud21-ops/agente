@@ -1,4 +1,5 @@
 requests
+flask
 ollama
 .\.venv\Scripts\python.exe .\prueba_gemma.py< : comando para usar con python y ollama
 .\.venv\Scripts\python.exe -m test.test_image_agent

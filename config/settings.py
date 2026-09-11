@@ -12,7 +12,7 @@ GEMMA_MODEL = "gemma3:4b"
 
 OLLAMA_URL = "http://127.0.0.1:11434"
 
-OLLAMA_TIMEOUT = 180
+OLLAMA_TIMEOUT = 900
 
 
 # ==========================================
