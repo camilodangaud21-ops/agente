@@ -80,6 +80,18 @@ def ejecutar_intencion(
         }
 
     # ------------------------------------------
+    # INTEGRAR INFORMACIÓN
+    # ------------------------------------------
+
+    if nombre_intencion == "integrar_informacion":
+
+        return {
+            "agente": "integration_agent",
+            "accion": "integrar_informacion",
+            "datos": datos
+        }
+
+    # ------------------------------------------
     # DESCONOCIDO
     # ------------------------------------------
 

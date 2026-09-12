@@ -29,6 +29,8 @@ from config.settings import (
     VOICE_TEMP_PATH,
     VOICE_EXIT_KEYWORDS,
     CONSOLIDADO_JSON_PATH,
+    IMAGEN_JSON_PATH,
+    AUDIO_JSON_PATH,
     DEFAULT_IMAGE_INPUT,
     DEFAULT_AUDIO_INPUT
 )
@@ -38,29 +40,34 @@ from config.settings import (
 # VALIDACIÓN PREVIA A LA EJECUCIÓN
 # ==========================================
 
-def _archivo_requerido(agente: str, datos: dict):
+def _archivos_requeridos(agente: str, datos: dict):
     """
-    Indica qué archivo de entrada necesita el agente para
-    poder ejecutar la acción, según lo que realmente usa
-    agent_executor.py internamente.
+    Indica qué archivos necesita el agente para poder ejecutar
+    la acción, según lo que realmente usa agent_executor.py.
 
-    Devuelve None si esa acción no depende de un archivo
-    externo (o si el agente no está contemplado).
+    Devuelve una lista de rutas. Una acción puede depender de
+    uno o varios archivos.
     """
+
+    if agente == "integration_agent":
+        return [
+            IMAGEN_JSON_PATH,
+            AUDIO_JSON_PATH
+        ]
 
     if agente in ("report_agent", "graph_agent", "knowledge_agent"):
-        return CONSOLIDADO_JSON_PATH
+        return [CONSOLIDADO_JSON_PATH]
 
     if agente == "image_agent":
-        return datos.get("ruta", DEFAULT_IMAGE_INPUT)
+        return [datos.get("ruta", DEFAULT_IMAGE_INPUT)]
 
     if agente == "audio_agent":
-        return datos.get("ruta", DEFAULT_AUDIO_INPUT)
+        return [datos.get("ruta", DEFAULT_AUDIO_INPUT)]
 
-    return None
+    return []
 
 
-def _confirmar_ejecucion(agente: str, accion: str, archivo_requerido) -> bool:
+def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
     """
     Muestra un resumen de la acción que está por ejecutarse
     y pide confirmación explícita antes de continuar.
@@ -77,8 +84,10 @@ def _confirmar_ejecucion(agente: str, accion: str, archivo_requerido) -> bool:
     print(f"Agente a ejecutar : {agente}")
     print(f"Acción            : {accion}")
 
-    if archivo_requerido:
-        print(f"Archivo necesario : {archivo_requerido} (encontrado ✅)")
+    if archivos_requeridos:
+        print("Archivos necesarios:")
+        for archivo in archivos_requeridos:
+            print(f"  - {archivo} (encontrado ✅)")
 
     respuesta = input(
         "\n¿Deseás continuar? [s = sí / n = no]: "
@@ -183,25 +192,33 @@ def ejecutar_comando_voz():
     print(decision)
 
     # ==========================================
-    # 4.5 VALIDACIÓN: ¿EXISTE EL ARCHIVO NECESARIO?
+    # 4.5 VALIDACIÓN: ¿EXISTEN LOS ARCHIVOS NECESARIOS?
     # ==========================================
 
-    archivo_requerido = _archivo_requerido(
+    archivos_requeridos = _archivos_requeridos(
         decision["agente"],
         decision["datos"]
     )
 
-    if archivo_requerido and not os.path.exists(archivo_requerido):
+    archivos_faltantes = [
+        archivo
+        for archivo in archivos_requeridos
+        if not os.path.exists(archivo)
+    ]
 
-        print(
-            f"\n❌ No se puede continuar: falta el archivo "
-            f"requerido '{archivo_requerido}'."
-        )
+    if archivos_faltantes:
+
+        print("\n❌ No se puede continuar: faltan archivos requeridos:")
+        for archivo in archivos_faltantes:
+            print(f"  - {archivo}")
 
         return resultado_error(
             agente=decision["agente"],
             accion=decision["accion"],
-            error=f"No se encontró el archivo requerido: {archivo_requerido}",
+            error=(
+                "No se encontraron los archivos requeridos: "
+                + ", ".join(archivos_faltantes)
+            ),
             datos=decision["datos"]
         )
 
@@ -212,7 +229,7 @@ def ejecutar_comando_voz():
     if not _confirmar_ejecucion(
         decision["agente"],
         decision["accion"],
-        archivo_requerido
+        archivos_requeridos
     ):
 
         print("\n🚫 Operación cancelada por el usuario.")

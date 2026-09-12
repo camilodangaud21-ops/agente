@@ -37,6 +37,11 @@ pruebas = [
     },
 
     {
+        "intencion": "integrar_informacion",
+        "datos": {}
+    },
+
+    {
         "intencion": "desconocido",
         "datos": {}
     }

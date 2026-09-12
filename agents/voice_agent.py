@@ -14,13 +14,18 @@ from services.gemma_service import consultar_gemma_json
 # más rápido, y evita interpretaciones erróneas de audio mal
 # transcrito).
 #
-# El orden importa: se revisan primero las categorías con
-# palabras más específicas (imagen, audio, reporte, grafo)
-# y al final la más genérica (analizar_informacion), para
-# evitar que un verbo genérico como "analiza" se robe casos
-# que en realidad son de otra categoría (ej: "analiza la foto").
+# El orden importa: se revisan primero las categorías que pueden
+# contener varias fuentes (integración), después las específicas
+# (imagen, audio, reporte, grafo) y al final la más genérica
+# (analizar_informacion).
 
 _PALABRAS_CLAVE_INTENCION = {
+    "integrar_informacion": [
+        "integrar", "integra", "integración", "integracion",
+        "consolidar", "consolida", "combinar", "combina",
+        "unir información", "unir informacion", "información conjunta",
+        "informacion conjunta"
+    ],
     "procesar_imagen": [
         "imagen", "imágen", "foto", "fotografia", "fotografía",
         "ilustracion", "ilustración", "captura", "screenshot"
@@ -111,6 +116,7 @@ Las intenciones permitidas son exclusivamente:
 - analizar_informacion
 - procesar_imagen
 - procesar_audio
+- integrar_informacion
 - desconocido
 
 Devuelve únicamente un JSON válido.
@@ -153,6 +159,10 @@ Reglas:
    - procesar_audio: "procesa el audio", "escucha el archivo",
      "transcribe el audio", "analiza el sonido", "aquí tienes
      el audio, procésalo", "revisa esta grabación"
+   - integrar_informacion: "integra la imagen y el audio",
+     "consolida la información", "combina los resultados",
+     "une el análisis de imagen y audio", "integra la información
+     de ambas fuentes"
 
 10. Si el texto tiene errores de transcripción pero el sentido
     general apunta claramente a una de las intenciones permitidas,
@@ -190,6 +200,16 @@ Respuesta:
 
 {{
     "intencion": "consultar_grafo",
+    "datos": {{}}
+}}
+
+Usuario:
+"integra la información de la imagen y el audio"
+
+Respuesta:
+
+{{
+    "intencion": "integrar_informacion",
     "datos": {{}}
 }}
 """
