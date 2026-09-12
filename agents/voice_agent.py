@@ -14,13 +14,18 @@ from services.gemma_service import consultar_gemma_json
 # más rápido, y evita interpretaciones erróneas de audio mal
 # transcrito).
 #
-# El orden importa: se revisan primero las categorías con
-# palabras más específicas (imagen, audio, integración, reporte,
-# grafo) y al final la más genérica (analizar_informacion), para
-# evitar que un verbo genérico como "analiza" se robe casos
-# que en realidad son de otra categoría.
+# El orden importa: se revisan primero las categorías que pueden
+# contener varias fuentes (integración), después las específicas
+# (imagen, audio, reporte, grafo) y al final la más genérica
+# (analizar_informacion).
 
 _PALABRAS_CLAVE_INTENCION = {
+    "integrar_informacion": [
+        "integrar", "integra", "integración", "integracion",
+        "consolidar", "consolida", "combinar", "combina",
+        "unir información", "unir informacion", "información conjunta",
+        "informacion conjunta"
+    ],
     "procesar_imagen": [
         "imagen", "imágen", "foto", "fotografia", "fotografía",
         "ilustracion", "ilustración", "captura", "screenshot"
@@ -28,12 +33,6 @@ _PALABRAS_CLAVE_INTENCION = {
     "procesar_audio": [
         "audio", "sonido", "grabacion", "grabación",
         "mp3", "wav", "voz grabada", "escucha el"
-    ],
-    "integrar_informacion": [
-        "integrar", "integra", "integración", "integracion",
-        "consolidar", "consolida", "combinar", "combina",
-        "unir información", "unir informacion", "información conjunta",
-        "informacion conjunta"
     ],
     "generar_reporte": [
         "reporte", "informe", "documento final", "pdf",
