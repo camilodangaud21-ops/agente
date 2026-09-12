@@ -5,6 +5,7 @@ from agents.graph_agent import ejecutar_graph_agent
 from agents.knowledge_agent import extraer_conocimiento
 from agents.image_agent import procesar_imagen
 from agents.audio_agent import procesar_audio
+from agents.integration_agent import integrar_informacion
 
 from services.pdf_service import generar_pdf
 from services.file_service import guardar_json
@@ -233,6 +234,44 @@ def ejecutar_agente(
 
             return resultado_error(
                 agente="audio_agent",
+                accion=accion,
+                error=str(e),
+                datos=datos
+            )
+
+    # ==========================================
+    # INTEGRATION AGENT
+    # ==========================================
+
+    if agente == "integration_agent":
+
+        print("\n🔗 Ejecutando Integration Agent...")
+
+        try:
+            resultado = integrar_informacion(
+                IMAGEN_JSON_PATH,
+                AUDIO_JSON_PATH
+            )
+
+            guardar_json(
+                resultado,
+                CONSOLIDADO_JSON_PATH
+            )
+
+            return resultado_exitoso(
+                agente="integration_agent",
+                accion=accion,
+                datos=datos,
+                resultado={
+                    "archivo": CONSOLIDADO_JSON_PATH,
+                    "integracion": resultado
+                }
+            )
+
+        except Exception as e:
+
+            return resultado_error(
+                agente="integration_agent",
                 accion=accion,
                 error=str(e),
                 datos=datos
