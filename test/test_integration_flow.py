@@ -77,5 +77,5 @@ def test_integration_executor_saves_consolidated_json():
         resultado_integracion,
         CONSOLIDADO_JSON_PATH
     )
-    assert resultado["completado"] is True
+    assert resultado["estado"] == "completado"
     assert resultado["resultado"]["archivo"] == CONSOLIDADO_JSON_PATH
