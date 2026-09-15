@@ -3,9 +3,9 @@ from agents.voice_controller import ejecutar_comando_voz
 
 def mostrar_banner():
 
-    print("+--------------------------------------------+")
-    print("|        SISTEMA MULTIMODAL DE AGENTES       |")
-    print("+--------------------------------------------+")
+    print("+------------------------------------------------+")
+    print("|        SISTEMA MULTIMODAL DE AGENTES de ia     |")
+    print("+------------------------------------------------+")
 
 
 def main():
