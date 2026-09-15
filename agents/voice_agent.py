@@ -90,7 +90,7 @@ def interpretar_comando(texto: str) -> dict:
     if categoria_probable is None:
 
         print(
-            "\n⚡ No se detectó ninguna palabra clave conocida. "
+            "\n[INFO] No se detectó ninguna palabra clave conocida. "
             "Se omite la consulta a Gemma."
         )
 
