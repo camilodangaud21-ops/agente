@@ -78,16 +78,16 @@ def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
     seguridad.
     """
 
-    print("\n================================")
-    print("     CONFIRMACIÓN REQUERIDA")
-    print("================================")
+    print("\n+--------------------------------------------+")
+    print("|             CONFIRMACIÓN REQUERIDA        |")
+    print("+--------------------------------------------+")
     print(f"Agente a ejecutar : {agente}")
     print(f"Acción            : {accion}")
 
     if archivos_requeridos:
         print("Archivos necesarios:")
         for archivo in archivos_requeridos:
-            print(f"  - {archivo} (encontrado ✅)")
+            print(f"  - {archivo} [OK]")
 
     respuesta = input(
         "\n¿Deseás continuar? [s = sí / n = no]: "
@@ -111,15 +111,15 @@ def ejecutar_comando_voz():
     Agent Executor
     """
 
-    print("\n================================")
-    print("       VOICE CONTROLLER")
-    print("================================")
+    print("\n+--------------------------------------------+")
+    print("|              VOICE CONTROLLER              |")
+    print("+--------------------------------------------+")
 
     # ==========================================
     # 1. GRABAR
     # ==========================================
 
-    print("\n🎙️ Paso 1/5 - Escuchando comando...")
+    print("\n[1/5] Escuchando comando...")
 
     grabar_audio_mientras_enter(
         ruta_salida=VOICE_TEMP_PATH
@@ -129,17 +129,17 @@ def ejecutar_comando_voz():
     # 2. TRANSCRIBIR
     # ==========================================
 
-    print("\n🧠 Paso 2/5 - Procesando voz...")
+    print("\n[2/5] Procesando voz...")
 
     texto = transcribir_audio(
         ruta_audio=VOICE_TEMP_PATH,
         idioma="es"
     )
 
-    print("\n📝 Transcripción:")
-    print("--------------------------------")
+    print("\n[TRANSCRIPCIÓN]")
+    print("----------------------------------------------")
     print(texto)
-    print("--------------------------------")
+    print("----------------------------------------------")
 
     if not texto:
         raise ValueError(
@@ -156,7 +156,7 @@ def ejecutar_comando_voz():
 
     if texto.strip().lower() in VOICE_EXIT_KEYWORDS:
 
-        print("\n👋 Comando de salida detectado.")
+        print("\n[INFO] Comando de salida detectado.")
 
         return resultado_exitoso(
             agente=None,
@@ -169,26 +169,26 @@ def ejecutar_comando_voz():
     # 3. VOICE AGENT
     # ==========================================
 
-    print("\n🤖 Paso 3/5 - Analizando intención...")
+    print("\n[3/5] Analizando intención...")
 
     intencion = interpretar_comando(
         texto
     )
 
-    print("\n🎯 Intención detectada:")
+    print("\n[INTENCIÓN DETECTADA]")
     print(intencion)
 
     # ==========================================
     # 4. ORCHESTRATOR
     # ==========================================
 
-    print("\n🧠 Paso 4/5 - Orquestando...")
+    print("\n[4/5] Orquestando...")
 
     decision = ejecutar_intencion(
         intencion
     )
 
-    print("\n🚦 Decisión:")
+    print("\n[DECISIÓN]")
     print(decision)
 
     # ==========================================
@@ -208,7 +208,7 @@ def ejecutar_comando_voz():
 
     if archivos_faltantes:
 
-        print("\n❌ No se puede continuar: faltan archivos requeridos:")
+        print("\n[ERROR] Faltan archivos requeridos:")
         for archivo in archivos_faltantes:
             print(f"  - {archivo}")
 
@@ -232,7 +232,7 @@ def ejecutar_comando_voz():
         archivos_requeridos
     ):
 
-        print("\n🚫 Operación cancelada por el usuario.")
+        print("\n[INFO] Operación cancelada por el usuario.")
 
         return resultado_error(
             agente=decision["agente"],
@@ -245,7 +245,7 @@ def ejecutar_comando_voz():
     # 5. EXECUTOR
     # ==========================================
 
-    print("\n⚙️ Paso 5/5 - Ejecutando agente...")
+    print("\n[5/5] Ejecutando agente...")
 
     resultado_final = ejecutar_agente(
         agente=decision["agente"],
@@ -253,9 +253,9 @@ def ejecutar_comando_voz():
         datos=decision["datos"]
     )
 
-    print("\n================================")
-    print("       RESULTADO FINAL")
-    print("================================")
+    print("\n+--------------------------------------------+")
+    print("|               RESULTADO FINAL              |")
+    print("+--------------------------------------------+")
 
     print(resultado_final)
 
