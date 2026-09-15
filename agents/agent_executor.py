@@ -47,7 +47,7 @@ def ejecutar_agente(
 
     if agente == "report_agent":
 
-        print("\n📄 Ejecutando Report Agent...")
+        print("\n[AGENTE] Report Agent")
 
         try:
             informe = generar_informe(
@@ -83,7 +83,7 @@ def ejecutar_agente(
 
     if agente == "graph_agent":
 
-        print("\n🕸️ Ejecutando Graph Agent...")
+        print("\n[AGENTE] Graph Agent")
 
         try:
             # NOTA: el proyecto aún no implementa un motor de
@@ -123,7 +123,7 @@ def ejecutar_agente(
 
     if agente == "knowledge_agent":
 
-        print("\n🧠 Ejecutando Knowledge Agent...")
+        print("\n[AGENTE] Knowledge Agent")
 
         try:
             consolidado = cargar_json(CONSOLIDADO_JSON_PATH)
@@ -171,7 +171,7 @@ def ejecutar_agente(
 
     if agente == "image_agent":
 
-        print("\n🖼️ Ejecutando Image Agent...")
+        print("\n[AGENTE] Image Agent")
 
         try:
             ruta_imagen = datos.get("ruta", DEFAULT_IMAGE_INPUT)
@@ -208,7 +208,7 @@ def ejecutar_agente(
 
     if agente == "audio_agent":
 
-        print("\n🎧 Ejecutando Audio Agent...")
+        print("\n[AGENTE] Audio Agent")
 
         try:
             ruta_audio = datos.get("ruta", DEFAULT_AUDIO_INPUT)
@@ -245,7 +245,7 @@ def ejecutar_agente(
 
     if agente == "integration_agent":
 
-        print("\n🔗 Ejecutando Integration Agent...")
+        print("\n[AGENTE] Integration Agent")
 
         try:
             resultado = integrar_informacion(
