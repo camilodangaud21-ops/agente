@@ -98,8 +98,8 @@ def grabar_audio_hasta_silencio(
     - tiempo_maximo: límite de seguridad de grabación.
     """
 
-    print("\n🎙️ Preparando micrófono...")
-    print("🎤 Habla cuando estés listo...")
+    print("\n[VOZ] Preparando micrófono...")
+    print("[VOZ] Habla cuando estés listo...")
 
     os.makedirs(
         os.path.dirname(ruta_salida),
@@ -127,17 +127,17 @@ def grabar_audio_hasta_silencio(
         status
     ):
         if status:
-            print(f"⚠️ Audio: {status}")
+            print(f"[ADVERTENCIA] Audio: {status}")
 
         cola_audio.put(
             indata.copy()
         )
 
-    print("\n🎙️ Escuchando...")
+    print("\n[VOZ] Escuchando...")
 
     dispositivo_entrada = _seleccionar_dispositivo_entrada()
     if dispositivo_entrada is not None:
-        print(f"📻 Micrófono seleccionado: índice {dispositivo_entrada}")
+        print(f"[VOZ] Micrófono seleccionado: índice {dispositivo_entrada}")
 
     with sd.InputStream(
         samplerate=samplerate,
@@ -164,7 +164,7 @@ def grabar_audio_hasta_silencio(
                 if not usuario_hablo:
 
                     print(
-                        "🗣️ Voz detectada..."
+                        "[VOZ] Voz detectada..."
                     )
 
                     usuario_hablo = True
@@ -181,7 +181,7 @@ def grabar_audio_hasta_silencio(
                 ):
 
                     print(
-                        "🔇 Silencio detectado."
+                        "[VOZ] Silencio detectado."
                     )
 
                     break
@@ -204,11 +204,11 @@ def grabar_audio_hasta_silencio(
     )
 
     print(
-        "✅ Grabación finalizada."
+        "[OK] Grabación finalizada."
     )
 
     print(
-        f"📁 Archivo: {ruta_salida}"
+        f"[ARCHIVO] {ruta_salida}"
     )
 
     return ruta_salida
@@ -227,11 +227,11 @@ def grabar_audio_mientras_enter(
     y corta la grabación apenas se suelta.
     """
 
-    print("\n🎙️ Mantén presionada la tecla ENTER para hablar...")
+    print("\n[VOZ] Mantén presionada la tecla ENTER para hablar...")
 
     keyboard.wait("enter")
 
-    print("🔴 Grabando... (soltá ENTER para terminar)")
+    print("[GRABANDO] Soltá ENTER para terminar.")
 
     os.makedirs(
         os.path.dirname(ruta_salida),
@@ -248,7 +248,7 @@ def grabar_audio_mientras_enter(
         status
     ):
         if status:
-            print(f"⚠️ Audio: {status}")
+            print(f"[ADVERTENCIA] Audio: {status}")
 
         cola_audio.put(
             indata.copy()
@@ -256,7 +256,7 @@ def grabar_audio_mientras_enter(
 
     dispositivo_entrada = _seleccionar_dispositivo_entrada()
     if dispositivo_entrada is not None:
-        print(f"📻 Micrófono seleccionado: índice {dispositivo_entrada}")
+        print(f"[VOZ] Micrófono seleccionado: índice {dispositivo_entrada}")
 
     with sd.InputStream(
         samplerate=samplerate,
@@ -273,7 +273,7 @@ def grabar_audio_mientras_enter(
             except queue.Empty:
                 continue
 
-    print("⏹️ ENTER soltado. Grabación finalizada.")
+    print("[OK] ENTER liberado. Grabación finalizada.")
 
     if not fragmentos:
         raise ValueError(
@@ -292,7 +292,7 @@ def grabar_audio_mientras_enter(
     )
 
     print(
-        f"📁 Archivo: {ruta_salida}"
+        f"[ARCHIVO] {ruta_salida}"
     )
 
     return ruta_salida
