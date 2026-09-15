@@ -3,17 +3,17 @@ from agents.voice_controller import ejecutar_comando_voz
 
 def mostrar_banner():
 
-    print("==============================================")
-    print("        Sistema multimodal con agentes de IA")
-    print("==============================================")
+    print("+--------------------------------------------+")
+    print("|        SISTEMA MULTIMODAL DE AGENTES       |")
+    print("+--------------------------------------------+")
 
 
 def main():
 
     mostrar_banner()
 
-    print("\n🎤 Modo asistente de voz")
-    print("Habla para indicarle al sistema qué deseas hacer.")
+    print("\n[ASISTENTE DE VOZ]")
+    print("Indica por voz la acción que deseas ejecutar.")
     print("Di 'Salir' para finalizar.\n")
 
     while True:
@@ -22,8 +22,10 @@ def main():
 
             resultado = ejecutar_comando_voz()
 
-            print("\n📦 Resultado:")
+            print("\n[RESULTADO]")
+            print("----------------------------------------------")
             print(resultado)
+            print("----------------------------------------------")
 
             # --------------------------------------
             # Verificar si debemos terminar
@@ -41,7 +43,7 @@ def main():
                 if accion == "salir":
 
                     print(
-                        "\n👋 Cerrando asistente..."
+                        "\n[INFO] Cerrando asistente..."
                     )
 
                     break
@@ -49,7 +51,7 @@ def main():
         except KeyboardInterrupt:
 
             print(
-                "\n\n👋 Programa finalizado."
+                "\n\n[INFO] Programa finalizado."
             )
 
             break
@@ -57,7 +59,7 @@ def main():
         except Exception as e:
 
             print(
-                "\n❌ Ocurrió un error:"
+                "\n[ERROR] Ocurrió un error:"
             )
 
             print(e)
