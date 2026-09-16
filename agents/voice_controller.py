@@ -70,12 +70,16 @@ def _archivos_requeridos(agente: str, datos: dict):
 def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
     """
     Muestra un resumen de la acción que está por ejecutarse
-    y pide confirmación explícita antes de continuar.
+    y solicita una confirmación explícita.
 
-    Devuelve True solo si el usuario confirma explícitamente
-    con "s" o "si". Cualquier otra respuesta (incluida una
-    respuesta vacía o ambigua) se trata como "no", por
-    seguridad.
+    La confirmación solo se acepta cuando el usuario escribe
+    "s", "si" o "sí". Una entrada vacía no se interpreta como
+    cancelación porque puede quedar un ENTER pendiente después
+    de utilizar el mismo ENTER para finalizar la grabación.
+
+    "n" o "no" cancelan explícitamente la operación.
+    Cualquier otra respuesta se considera inválida y se vuelve
+    a solicitar la confirmación.
     """
 
     print("\n+--------------------------------------------+")
@@ -89,11 +93,27 @@ def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
         for archivo in archivos_requeridos:
             print(f"  - {archivo} [OK]")
 
-    respuesta = input(
-        "\n¿Deseás continuar? [s = sí / n = no]: "
-    ).strip().lower()
+    while True:
+        respuesta = input(
+            "\n¿Deseás continuar? [s = sí / n = no]: "
+        ).strip().lower()
 
-    return respuesta in ("s", "si", "sí")
+        if respuesta in ("s", "si", "sí"):
+            return True
+
+        if respuesta in ("n", "no"):
+            return False
+
+        if not respuesta:
+            print(
+                "[ADVERTENCIA] No se recibió una respuesta. "
+                "Escribe s para continuar o n para cancelar."
+            )
+        else:
+            print(
+                "[ADVERTENCIA] Respuesta no válida. "
+                "Escribe s para continuar o n para cancelar."
+            )
 
 
 def ejecutar_comando_voz():
