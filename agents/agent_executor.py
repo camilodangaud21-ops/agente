@@ -9,11 +9,8 @@ from agents.integration_agent import integrar_informacion
 
 from services.pdf_service import generar_pdf
 from services.file_service import guardar_json
-from services.graph_service import (
-    cargar_json,
-    construir_grafo_conocimiento,
-    guardar_grafo
-)
+from services.graph_service import cargar_json
+from services.mcp_client import actualizar_conocimiento
 
 from services.agent_result import (
     resultado_exitoso,
@@ -50,26 +47,17 @@ def ejecutar_agente(
         print("\n[AGENTE] Report Agent")
 
         try:
-            informe = generar_informe(
-                CONSOLIDADO_JSON_PATH
-            )
-
-            generar_pdf(
-                informe,
-                REPORT_OUTPUT
-            )
+            informe = generar_informe(CONSOLIDADO_JSON_PATH)
+            generar_pdf(informe, REPORT_OUTPUT)
 
             return resultado_exitoso(
                 agente="report_agent",
                 accion=accion,
                 datos=datos,
-                resultado={
-                    "archivo": REPORT_OUTPUT
-                }
+                resultado={"archivo": REPORT_OUTPUT}
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="report_agent",
                 accion=accion,
@@ -86,12 +74,6 @@ def ejecutar_agente(
         print("\n[AGENTE] Graph Agent")
 
         try:
-            # NOTA: el proyecto aún no implementa un motor de
-            # consultas sobre el grafo. Por ahora, "consultar_grafo"
-            # reconstruye el grafo simple a partir del consolidado
-            # más reciente y reporta su tamaño. Cuando exista una
-            # capacidad real de consulta, esta rama debe actualizarse
-            # para usarla en vez de reconstruir el grafo.
             grafo = ejecutar_graph_agent(
                 CONSOLIDADO_JSON_PATH,
                 GRAFO_SIMPLE_PATH
@@ -109,7 +91,6 @@ def ejecutar_agente(
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="graph_agent",
                 accion=accion,
@@ -124,44 +105,38 @@ def ejecutar_agente(
     if agente == "knowledge_agent":
 
         print("\n[AGENTE] Knowledge Agent")
+        print("[MCP] Enviando conocimiento al servidor MCP...")
 
         try:
             consolidado = cargar_json(CONSOLIDADO_JSON_PATH)
-
             conocimiento = extraer_conocimiento(consolidado)
 
-            guardar_json(
-                conocimiento,
-                KNOWLEDGE_JSON_PATH
-            )
-
-            grafo_conocimiento = construir_grafo_conocimiento(
-                conocimiento
-            )
-
-            guardar_grafo(
-                grafo_conocimiento,
-                GRAFO_CONOCIMIENTO_PATH
-            )
+            # La persistencia del conocimiento y la regeneración del grafo
+            # pasan por MCP: Knowledge Agent -> MCP -> Grafo de conocimiento.
+            resultado_mcp = actualizar_conocimiento(conocimiento)
 
             return resultado_exitoso(
                 agente="knowledge_agent",
                 accion=accion,
                 datos=datos,
                 resultado={
-                    "archivo_json": KNOWLEDGE_JSON_PATH,
-                    "archivo_grafo": GRAFO_CONOCIMIENTO_PATH,
-                    "entidades": grafo_conocimiento.number_of_nodes(),
-                    "relaciones": grafo_conocimiento.number_of_edges()
+                    "archivo_json": resultado_mcp.get(
+                        "archivo_json", KNOWLEDGE_JSON_PATH
+                    ),
+                    "archivo_grafo": resultado_mcp.get(
+                        "archivo_grafo", GRAFO_CONOCIMIENTO_PATH
+                    ),
+                    "entidades": resultado_mcp.get("entidades", 0),
+                    "relaciones": resultado_mcp.get("relaciones", 0),
+                    "mcp": "conectado"
                 }
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="knowledge_agent",
                 accion=accion,
-                error=str(e),
+                error=f"Error en integración con MCP: {e}",
                 datos=datos
             )
 
@@ -175,13 +150,9 @@ def ejecutar_agente(
 
         try:
             ruta_imagen = datos.get("ruta", DEFAULT_IMAGE_INPUT)
-
             resultado = procesar_imagen(ruta_imagen)
 
-            guardar_json(
-                resultado,
-                IMAGEN_JSON_PATH
-            )
+            guardar_json(resultado, IMAGEN_JSON_PATH)
 
             return resultado_exitoso(
                 agente="image_agent",
@@ -194,7 +165,6 @@ def ejecutar_agente(
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="image_agent",
                 accion=accion,
@@ -212,13 +182,9 @@ def ejecutar_agente(
 
         try:
             ruta_audio = datos.get("ruta", DEFAULT_AUDIO_INPUT)
-
             resultado = procesar_audio(ruta_audio)
 
-            guardar_json(
-                resultado,
-                AUDIO_JSON_PATH
-            )
+            guardar_json(resultado, AUDIO_JSON_PATH)
 
             return resultado_exitoso(
                 agente="audio_agent",
@@ -231,7 +197,6 @@ def ejecutar_agente(
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="audio_agent",
                 accion=accion,
@@ -253,10 +218,7 @@ def ejecutar_agente(
                 AUDIO_JSON_PATH
             )
 
-            guardar_json(
-                resultado,
-                CONSOLIDADO_JSON_PATH
-            )
+            guardar_json(resultado, CONSOLIDADO_JSON_PATH)
 
             return resultado_exitoso(
                 agente="integration_agent",
@@ -269,7 +231,6 @@ def ejecutar_agente(
             )
 
         except Exception as e:
-
             return resultado_error(
                 agente="integration_agent",
                 accion=accion,
