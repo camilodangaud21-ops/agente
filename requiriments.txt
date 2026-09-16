@@ -1,12 +1,17 @@
 requests
 flask
 ollama
-.\.venv\Scripts\python.exe .\prueba_gemma.py< : comando para usar con python y ollama
-.\.venv\Scripts\python.exe -m test.test_image_agent
-.\.venv\Scripts\python.exe -m test.test_audio_agent
-.\.venv\Scripts\python.exe -m test.test_integration_agent
-.\.venv\Scripts\python.exe main.py
+mcp<2
+openai-whisper
+networkx
+reportlab
+numpy
+sounddevice
+scipy
 
-cd C:\Users\luism\OneDrive\Desktop\Agente_multimodal
-.\.venv312\Scripts\Activate.ps1
-python main.py
+# Comandos de ejecución (Windows PowerShell)
+# .\.venv\Scripts\python.exe .\prueba_gemma.py
+# .\.venv\Scripts\python.exe -m test.test_image_agent
+# .\.venv\Scripts\python.exe -m test.test_audio_agent
+# .\.venv\Scripts\python.exe -m test.test_integration_agent
+# .\.venv\Scripts\python.exe main.py
