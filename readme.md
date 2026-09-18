@@ -2,7 +2,7 @@
 
 Sistema de inteligencia artificial basado en agentes especializados para procesar imagen, audio y comandos de voz. El proyecto convierte la informacion multimodal en JSON estructurado, consolida los resultados con Gemma ejecutado localmente, genera informes en PDF y construye grafos de conocimiento.
 
-La version actual incorpora un asistente de voz capaz de interpretar una instruccion, decidir que agente debe ejecutarla y devolver el resultado correspondiente.
+La version actual incorpora un asistente de voz capaz de interpretar una instruccion, decidir que agente debe ejecutarla y devolver el resultado correspondiente. Ademas, el Knowledge Agent ya no escribe el grafo de conocimiento directamente: pasa por un **servidor MCP** (`servidor_mcp.py`) que valida, persiste `knowledge.json` y regenera el GraphML, y el grafo resultante puede exportarse como una boveda de **Obsidian** navegable.
 
 ## Vista general
 
@@ -17,10 +17,23 @@ Usuario -> Voice Controller -> Whisper -> Voice Agent
              +-----------> Integration Agent               |        Knowledge Agent
                               |                             |                |
                               v                             v                v
-                       consolidado.json                informe.json     knowledge.json
-                                                            |                |
-                                                            v                v
-                                                    informe_voz.pdf       GraphML
+                       consolidado.json                informe.json          |
+                                                            |                 v
+                                                            v         services/mcp_client.py
+                                                    informe_voz.pdf           |
+                                                                              v
+                                                                      servidor_mcp.py
+                                                                       (MCP, STDIO)
+                                                                              |
+                                                              +---------------+---------------+
+                                                              v                               v
+                                                       knowledge.json              grafo_conocimiento.graphml
+                                                                                              |
+                                                                                              v
+                                                                                generar_grafo_obsidian.py
+                                                                                              |
+                                                                                              v
+                                                                                  data/output/obsidian_vault/
 ```
 
 ## Que hace
@@ -206,8 +219,35 @@ El agente de voz interpreta la orden, pero no ejecuta acciones directamente. La 
 
 - `generar_reporte` genera el PDF a partir de `consolidado.json`.
 - `procesar_imagen` y `procesar_audio` ejecutan el Image Agent / Audio Agent sobre un archivo por defecto (`data/input/prueba.jpg` / `data/input/prueba.mp3`), o sobre la ruta indicada en `datos.ruta` si el comando de voz la incluye, y guardan el resultado en `data/output/imagen.json` / `data/output/audio.json`.
-- `analizar_informacion` ejecuta el Knowledge Agent sobre `consolidado.json`, guarda `knowledge.json` y regenera `grafo_conocimiento.graphml`.
+- `analizar_informacion` ejecuta el Knowledge Agent sobre `consolidado.json` y envia el resultado al servidor MCP, que valida el conocimiento, guarda `knowledge.json` y regenera `grafo_conocimiento.graphml`. Ver la seccion "MCP y grafo de conocimiento" para el detalle.
 - `consultar_grafo` reconstruye el grafo simple (`grafo.graphml`) a partir del consolidado mas reciente y reporta cuantos nodos y relaciones tiene. **Importante:** el proyecto todavia no implementa un motor de consultas real sobre el grafo (por ejemplo, "que relaciones tiene Juan Perez"); esta intencion solo regenera el grafo como paso intermedio hasta que exista esa capacidad.
+
+## MCP y grafo de conocimiento
+
+El proyecto conecta el Knowledge Agent con el grafo de conocimiento a traves de un servidor **MCP (Model Context Protocol)**, en lugar de escribir el archivo directamente:
+
+```text
+Knowledge Agent -> services/mcp_client.py -> servidor_mcp.py (MCP, STDIO) -> knowledge.json + GraphML
+```
+
+- **`servidor_mcp.py`**: servidor MCP construido con `FastMCP`. Expone las herramientas:
+  - `actualizar_conocimiento(conocimiento_json)`: valida la estructura (entidades con `id`/`nombre`/`tipo`, relaciones que referencian entidades existentes), guarda `knowledge.json` y regenera `grafo_conocimiento.graphml`.
+  - `buscar_entidad(nombre)`: busca entidades por coincidencia parcial de nombre.
+  - `relaciones_de(nombre_entidad)`: devuelve las relaciones entrantes y salientes de una entidad.
+  - `listar_entidades()`: lista todas las entidades agrupadas por tipo.
+  - `resumen_grafo()`: cantidad de entidades, relaciones y tipos presentes.
+- **`services/mcp_client.py`**: cliente MCP local que levanta `servidor_mcp.py` por transporte STDIO, inicializa la sesion y llama a sus herramientas desde codigo Python sincrono (`actualizar_conocimiento(...)`, `consultar_mcp(...)`).
+- **`agents/agent_executor.py`**: cuando se ejecuta `knowledge_agent`, en vez de guardar el conocimiento directamente, llama a `services.mcp_client.actualizar_conocimiento(...)`, haciendo explicita la cadena Agente -> MCP -> Grafo.
+
+Requiere instalar el paquete `mcp` en su version 1.x (`pip install "mcp<2"`, ya incluido en `requiriments.txt`).
+
+## Exportar el grafo a Obsidian
+
+`generar_grafo_obsidian.py` toma el `knowledge.json` mas reciente, reconstruye el grafo y exporta una nota `.md` por cada entidad (con metadatos YAML y enlaces `[[wikilink]]` hacia las entidades relacionadas) en `data/output/obsidian_vault/`. Al abrir esa carpeta como Vault en Obsidian, el grafo visual se arma automaticamente a partir de esos enlaces.
+
+```powershell
+python generar_grafo_obsidian.py
+```
 
 ## Ejecucion por etapas
 
@@ -379,10 +419,11 @@ La documentacion especifica de voz se encuentra en [`docs/version-2.0/`](docs/ve
 
 ## Estado del proyecto
 
-**Version actual: 2.0**
+**Version actual: 2.1**
 
 - V1.0: completada.
 - V2.0: implementada con interaccion por voz, grabacion inteligente, configuracion centralizada y ejecucion orquestada.
+- V2.1: el Knowledge Agent conecta con el grafo de conocimiento a traves de un servidor MCP (`servidor_mcp.py` + `services/mcp_client.py`), y el grafo puede exportarse como boveda de Obsidian (`generar_grafo_obsidian.py`).
 - V3.0: etapa experimental futura para memoria, herramientas externas, automatizacion, APIs e interfaces graficas.
 
 ## Consideraciones de privacidad
