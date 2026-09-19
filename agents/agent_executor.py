@@ -9,8 +9,12 @@ from agents.integration_agent import integrar_informacion
 
 from services.pdf_service import generar_pdf
 from services.file_service import guardar_json
-from services.graph_service import cargar_json
-from services.mcp_client import actualizar_conocimiento
+from services.graph_service import (
+    cargar_json,
+    construir_grafo_conocimiento,
+    guardar_grafo,
+    exportar_a_obsidian,
+)
 
 from services.agent_result import (
     resultado_exitoso,
@@ -26,7 +30,8 @@ from config.settings import (
     IMAGEN_JSON_PATH,
     AUDIO_JSON_PATH,
     DEFAULT_IMAGE_INPUT,
-    DEFAULT_AUDIO_INPUT
+    DEFAULT_AUDIO_INPUT,
+    OBSIDIAN_VAULT_PATH
 )
 
 
@@ -105,30 +110,32 @@ def ejecutar_agente(
     if agente == "knowledge_agent":
 
         print("\n[AGENTE] Knowledge Agent")
-        print("[MCP] Enviando conocimiento al servidor MCP...")
+        print("[GRAFO] Generando grafo de conocimiento...")
+        print("[OBSIDIAN] Exportando conocimiento al Vault...")
 
         try:
             consolidado = cargar_json(CONSOLIDADO_JSON_PATH)
             conocimiento = extraer_conocimiento(consolidado)
 
-            # La persistencia del conocimiento y la regeneración del grafo
-            # pasan por MCP: Knowledge Agent -> MCP -> Grafo de conocimiento.
-            resultado_mcp = actualizar_conocimiento(conocimiento)
+            # Flujo principal sin MCP:
+            # Knowledge Agent -> knowledge.json -> GraphML -> Obsidian Vault.
+            guardar_json(conocimiento, KNOWLEDGE_JSON_PATH)
+
+            grafo = construir_grafo_conocimiento(conocimiento)
+            guardar_grafo(grafo, GRAFO_CONOCIMIENTO_PATH)
+            exportar_a_obsidian(grafo, OBSIDIAN_VAULT_PATH)
 
             return resultado_exitoso(
                 agente="knowledge_agent",
                 accion=accion,
                 datos=datos,
                 resultado={
-                    "archivo_json": resultado_mcp.get(
-                        "archivo_json", KNOWLEDGE_JSON_PATH
-                    ),
-                    "archivo_grafo": resultado_mcp.get(
-                        "archivo_grafo", GRAFO_CONOCIMIENTO_PATH
-                    ),
-                    "entidades": resultado_mcp.get("entidades", 0),
-                    "relaciones": resultado_mcp.get("relaciones", 0),
-                    "mcp": "conectado"
+                    "archivo_json": KNOWLEDGE_JSON_PATH,
+                    "archivo_grafo": GRAFO_CONOCIMIENTO_PATH,
+                    "vault_obsidian": OBSIDIAN_VAULT_PATH,
+                    "entidades": grafo.number_of_nodes(),
+                    "relaciones": grafo.number_of_edges(),
+                    "mcp": "opcional"
                 }
             )
 
@@ -136,7 +143,7 @@ def ejecutar_agente(
             return resultado_error(
                 agente="knowledge_agent",
                 accion=accion,
-                error=f"Error en integración con MCP: {e}",
+                error=f"Error generando el grafo o exportando a Obsidian: {e}",
                 datos=datos
             )
 
