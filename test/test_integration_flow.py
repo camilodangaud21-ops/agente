@@ -114,48 +114,68 @@ def test_integration_executor_saves_consolidated_json():
 
 
 def test_complete_workflow_orchestrates_all_stages():
-    resultados = {
-        "image_agent": {
-            "estado": "completado",
-            "resultado": {"archivo": IMAGEN_JSON_PATH}
-        },
-        "audio_agent": {
-            "estado": "completado",
-            "resultado": {"archivo": AUDIO_JSON_PATH}
-        },
-        "integration_agent": {
-            "estado": "completado",
-            "resultado": {"archivo": CONSOLIDADO_JSON_PATH}
-        },
-        "knowledge_agent": {
-            "estado": "completado",
-            "resultado": {
-                "archivo_json": "data/output/knowledge.json",
-                "archivo_grafo": "data/output/grafo_conocimiento.graphml",
-                "vault_obsidian": "data/output/obsidian_vault",
-                "entidades": 2,
-                "relaciones": 1
-            }
-        }
+    resultado_imagen = {"texto": "imagen procesada"}
+    resultado_audio = {"texto": "audio procesado"}
+    resultado_integracion = {
+        "fuentes": ["imagen", "audio"],
+        "datos_consolidados": {}
+    }
+    conocimiento = {
+        "entidades": [
+            {"id": "e1", "nombre": "Entidad 1", "tipo": "tema"}
+        ],
+        "relaciones": []
     }
 
-    with patch(
-        "agents.agent_executor.ejecutar_agente"
-    ) as ejecutar_mock:
-        ejecutar_mock.side_effect = [
-            resultados["image_agent"],
-            resultados["audio_agent"],
-            resultados["integration_agent"],
-            resultados["knowledge_agent"]
-        ]
+    class FakeGraph:
+        def number_of_nodes(self):
+            return 1
 
-        # Esta prueba verifica la secuencia esperada del workflow.
-        # La implementación real se cubre ejecutando el módulo
-        # directamente en las pruebas de integración.
-        resultado = ejecutar_mock(
+        def number_of_edges(self):
+            return 0
+
+    with patch(
+        "agents.agent_executor.procesar_imagen",
+        return_value=resultado_imagen
+    ) as imagen_mock, patch(
+        "agents.agent_executor.procesar_audio",
+        return_value=resultado_audio
+    ) as audio_mock, patch(
+        "agents.agent_executor.integrar_informacion",
+        return_value=resultado_integracion
+    ) as integrar_mock, patch(
+        "agents.agent_executor.extraer_conocimiento",
+        return_value=conocimiento
+    ) as conocimiento_mock, patch(
+        "agents.agent_executor.cargar_json",
+        return_value=resultado_integracion
+    ), patch(
+        "agents.agent_executor.guardar_json"
+    ) as guardar_mock, patch(
+        "agents.agent_executor.construir_grafo_conocimiento",
+        return_value=FakeGraph()
+    ) as grafo_mock, patch(
+        "agents.agent_executor.guardar_grafo"
+    ) as guardar_grafo_mock, patch(
+        "agents.agent_executor.exportar_a_obsidian"
+    ) as obsidian_mock:
+        resultado = ejecutar_agente(
             agente="workflow_agent",
             accion="procesar_informacion_completa",
             datos={}
         )
 
+    imagen_mock.assert_called_once_with(DEFAULT_IMAGE_INPUT)
+    audio_mock.assert_called_once_with(DEFAULT_AUDIO_INPUT)
+    integrar_mock.assert_called_once_with(
+        IMAGEN_JSON_PATH,
+        AUDIO_JSON_PATH
+    )
+    conocimiento_mock.assert_called_once_with(resultado_integracion)
+    guardar_mock.assert_any_call(resultado_integracion, CONSOLIDADO_JSON_PATH)
+    grafo_mock.assert_called_once_with(conocimiento)
+    guardar_grafo_mock.assert_called_once()
+    obsidian_mock.assert_called_once()
+
     assert resultado["estado"] == "completado"
+    assert resultado["resultado"]["consolidado"] == CONSOLIDADO_JSON_PATH
