@@ -5,7 +5,7 @@ def ejecutar_intencion(
     intencion: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
-    Determina qué agente debe ejecutarse
+    Determina qué flujo o agente debe ejecutarse
     según la intención interpretada por el Voice Agent.
     """
 
@@ -18,6 +18,18 @@ def ejecutar_intencion(
         "datos",
         {}
     )
+
+    # ------------------------------------------
+    # FLUJO MULTIMODAL COMPLETO
+    # ------------------------------------------
+
+    if nombre_intencion == "procesar_informacion_completa":
+
+        return {
+            "agente": "workflow_agent",
+            "accion": "procesar_informacion_completa",
+            "datos": datos
+        }
 
     # ------------------------------------------
     # GENERAR REPORTE
