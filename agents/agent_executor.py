@@ -44,6 +44,101 @@ def ejecutar_agente(
     datos = datos or {}
 
     # ==========================================
+    # WORKFLOW MULTIMODAL COMPLETO
+    # ==========================================
+
+    if agente == "workflow_agent":
+
+        print("\n[FLUJO] Procesamiento multimodal completo")
+
+        try:
+            print("\n[FLUJO 1/5] Procesando imagen...")
+            resultado_imagen = ejecutar_agente(
+                agente="image_agent",
+                accion="procesar_imagen",
+                datos=datos
+            )
+
+            if resultado_imagen.get("estado") != "completado":
+                return resultado_error(
+                    agente=agente,
+                    accion=accion,
+                    error="Falló el procesamiento de la imagen.",
+                    datos=datos
+                )
+
+            print("\n[FLUJO 2/5] Procesando audio...")
+            resultado_audio = ejecutar_agente(
+                agente="audio_agent",
+                accion="procesar_audio",
+                datos=datos
+            )
+
+            if resultado_audio.get("estado") != "completado":
+                return resultado_error(
+                    agente=agente,
+                    accion=accion,
+                    error="Falló el procesamiento del audio.",
+                    datos=datos
+                )
+
+            print("\n[FLUJO 3/5] Integrando imagen y audio...")
+            resultado_integracion = ejecutar_agente(
+                agente="integration_agent",
+                accion="integrar_informacion",
+                datos=datos
+            )
+
+            if resultado_integracion.get("estado") != "completado":
+                return resultado_error(
+                    agente=agente,
+                    accion=accion,
+                    error="Falló la integración de la información.",
+                    datos=datos
+                )
+
+            print("\n[FLUJO 4/5] Extrayendo conocimiento y generando grafo...")
+            resultado_conocimiento = ejecutar_agente(
+                agente="knowledge_agent",
+                accion="analizar_informacion",
+                datos=datos
+            )
+
+            if resultado_conocimiento.get("estado") != "completado":
+                return resultado_error(
+                    agente=agente,
+                    accion=accion,
+                    error="Falló la generación del conocimiento o del grafo.",
+                    datos=datos
+                )
+
+            print("\n[FLUJO 5/5] Exportación a Obsidian completada.")
+
+            return resultado_exitoso(
+                agente=agente,
+                accion=accion,
+                datos=datos,
+                resultado={
+                    "imagen": resultado_imagen["resultado"]["archivo"],
+                    "audio": resultado_audio["resultado"]["archivo"],
+                    "consolidado": resultado_integracion["resultado"]["archivo"],
+                    "knowledge": resultado_conocimiento["resultado"]["archivo_json"],
+                    "grafo": resultado_conocimiento["resultado"]["archivo_grafo"],
+                    "vault_obsidian": resultado_conocimiento["resultado"]["vault_obsidian"],
+                    "entidades": resultado_conocimiento["resultado"]["entidades"],
+                    "relaciones": resultado_conocimiento["resultado"]["relaciones"]
+                }
+            )
+
+        except Exception as e:
+            return resultado_error(
+                agente=agente,
+                accion=accion,
+                error=f"Error en el flujo multimodal completo: {e}",
+                datos=datos
+            )
+
+    # ==========================================
     # REPORT AGENT
     # ==========================================
 
@@ -117,8 +212,6 @@ def ejecutar_agente(
             consolidado = cargar_json(CONSOLIDADO_JSON_PATH)
             conocimiento = extraer_conocimiento(consolidado)
 
-            # Flujo principal sin MCP:
-            # Knowledge Agent -> knowledge.json -> GraphML -> Obsidian Vault.
             guardar_json(conocimiento, KNOWLEDGE_JSON_PATH)
 
             grafo = construir_grafo_conocimiento(conocimiento)
@@ -156,7 +249,7 @@ def ejecutar_agente(
         print("\n[AGENTE] Image Agent")
 
         try:
-            ruta_imagen = datos.get("ruta", DEFAULT_IMAGE_INPUT)
+            ruta_imagen = datos.get("ruta_imagen", datos.get("ruta", DEFAULT_IMAGE_INPUT))
             resultado = procesar_imagen(ruta_imagen)
 
             guardar_json(resultado, IMAGEN_JSON_PATH)
@@ -188,7 +281,7 @@ def ejecutar_agente(
         print("\n[AGENTE] Audio Agent")
 
         try:
-            ruta_audio = datos.get("ruta", DEFAULT_AUDIO_INPUT)
+            ruta_audio = datos.get("ruta_audio", datos.get("ruta", DEFAULT_AUDIO_INPUT))
             resultado = procesar_audio(ruta_audio)
 
             guardar_json(resultado, AUDIO_JSON_PATH)
