@@ -1,65 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d2" for="edge" attr.name="relacion" attr.type="string" />
   <key id="d1" for="node" attr.name="tipo" attr.type="string" />
   <key id="d0" for="node" attr.name="nombre" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="E1">
-      <data key="d0">¿CÓMO CONVERTIR</data>
-      <data key="d1">Pregunta</data>
+    <node id="T1">
+      <data key="d0">Prueba Diagnostico</data>
+      <data key="d1">test</data>
     </node>
-    <node id="E2">
-      <data key="d0">UNA IMAGEN</data>
-      <data key="d1">Concepto</data>
-    </node>
-    <node id="E3">
-      <data key="d0">A TEXTO?</data>
-      <data key="d1">Pregunta</data>
-    </node>
-    <node id="E4">
-      <data key="d0">Imagenatexto.io</data>
-      <data key="d1">Sitio Web</data>
-    </node>
-    <node id="E5">
-      <data key="d0">mujer</data>
-      <data key="d1">Persona</data>
-    </node>
-    <node id="E6">
-      <data key="d0">ordenador portátil</data>
-      <data key="d1">Dispositivo</data>
-    </node>
-    <node id="E7">
-      <data key="d0">documento</data>
-      <data key="d1">Documento</data>
-    </node>
-    <node id="E8">
-      <data key="d0">icono de nube</data>
-      <data key="d1">Icono</data>
-    </node>
-    <node id="E9">
-      <data key="d0">icono de cámara</data>
-      <data key="d1">Icono</data>
-    </node>
-    <edge source="E1" target="E2">
-      <data key="d2">pregunta sobre</data>
-    </edge>
-    <edge source="E3" target="E2">
-      <data key="d2">pregunta sobre</data>
-    </edge>
-    <edge source="E4" target="E1">
-      <data key="d2">relacionado con</data>
-    </edge>
-    <edge source="E5" target="E6">
-      <data key="d2">utilizando</data>
-    </edge>
-    <edge source="E7" target="E6">
-      <data key="d2">utilizando</data>
-    </edge>
-    <edge source="E8" target="E2">
-      <data key="d2">relacionado con</data>
-    </edge>
-    <edge source="E9" target="E2">
-      <data key="d2">relacionado con</data>
-    </edge>
   </graph>
 </graphml>

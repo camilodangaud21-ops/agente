@@ -1,86 +1,10 @@
 {
-  "entidades": [
-    {
-      "id": "E1",
-      "nombre": "¿CÓMO CONVERTIR",
-      "tipo": "Pregunta"
-    },
-    {
-      "id": "E2",
-      "nombre": "UNA IMAGEN",
-      "tipo": "Concepto"
-    },
-    {
-      "id": "E3",
-      "nombre": "A TEXTO?",
-      "tipo": "Pregunta"
-    },
-    {
-      "id": "E4",
-      "nombre": "Imagenatexto.io",
-      "tipo": "Sitio Web"
-    },
-    {
-      "id": "E5",
-      "nombre": "mujer",
-      "tipo": "Persona"
-    },
-    {
-      "id": "E6",
-      "nombre": "ordenador portátil",
-      "tipo": "Dispositivo"
-    },
-    {
-      "id": "E7",
-      "nombre": "documento",
-      "tipo": "Documento"
-    },
-    {
-      "id": "E8",
-      "nombre": "icono de nube",
-      "tipo": "Icono"
-    },
-    {
-      "id": "E9",
-      "nombre": "icono de cámara",
-      "tipo": "Icono"
-    }
-  ],
-  "relaciones": [
-    {
-      "origen": "E1",
-      "relacion": "pregunta sobre",
-      "destino": "E2"
-    },
-    {
-      "origen": "E3",
-      "relacion": "pregunta sobre",
-      "destino": "E2"
-    },
-    {
-      "origen": "E4",
-      "relacion": "relacionado con",
-      "destino": "E1"
-    },
-    {
-      "origen": "E5",
-      "relacion": "utilizando",
-      "destino": "E6"
-    },
-    {
-      "origen": "E7",
-      "relacion": "utilizando",
-      "destino": "E6"
-    },
-    {
-      "origen": "E8",
-      "relacion": "relacionado con",
-      "destino": "E2"
-    },
-    {
-      "origen": "E9",
-      "relacion": "relacionado con",
-      "destino": "E2"
-    }
-  ]
+    "entidades": [
+        {
+            "id": "T1",
+            "nombre": "Prueba Diagnostico",
+            "tipo": "test"
+        }
+    ],
+    "relaciones": []
 }
