@@ -42,12 +42,15 @@ from config.settings import (
 
 def _archivos_requeridos(agente: str, datos: dict):
     """
-    Indica qué archivos necesita el agente para poder ejecutar
-    la acción, según lo que realmente usa agent_executor.py.
-
-    Devuelve una lista de rutas. Una acción puede depender de
-    uno o varios archivos.
+    Indica qué archivos necesita el agente o flujo para poder
+    ejecutar la acción.
     """
+
+    if agente == "workflow_agent":
+        return [
+            datos.get("ruta_imagen", DEFAULT_IMAGE_INPUT),
+            datos.get("ruta_audio", DEFAULT_AUDIO_INPUT)
+        ]
 
     if agente == "integration_agent":
         return [
@@ -59,10 +62,10 @@ def _archivos_requeridos(agente: str, datos: dict):
         return [CONSOLIDADO_JSON_PATH]
 
     if agente == "image_agent":
-        return [datos.get("ruta", DEFAULT_IMAGE_INPUT)]
+        return [datos.get("ruta_imagen", datos.get("ruta", DEFAULT_IMAGE_INPUT))]
 
     if agente == "audio_agent":
-        return [datos.get("ruta", DEFAULT_AUDIO_INPUT)]
+        return [datos.get("ruta_audio", datos.get("ruta", DEFAULT_AUDIO_INPUT))]
 
     return []
 
@@ -71,15 +74,6 @@ def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
     """
     Muestra un resumen de la acción que está por ejecutarse
     y solicita una confirmación explícita.
-
-    La confirmación solo se acepta cuando el usuario escribe
-    "s", "si" o "sí". Una entrada vacía no se interpreta como
-    cancelación porque puede quedar un ENTER pendiente después
-    de utilizar el mismo ENTER para finalizar la grabación.
-
-    "n" o "no" cancelan explícitamente la operación.
-    Cualquier otra respuesta se considera inválida y se vuelve
-    a solicitar la confirmación.
     """
 
     print("\n+--------------------------------------------+")
@@ -91,7 +85,8 @@ def _confirmar_ejecucion(agente: str, accion: str, archivos_requeridos) -> bool:
     if archivos_requeridos:
         print("Archivos necesarios:")
         for archivo in archivos_requeridos:
-            print(f"  - {archivo} [OK]")
+            estado = "[OK]" if os.path.exists(archivo) else "[FALTA]"
+            print(f"  - {archivo} {estado}")
 
     while True:
         respuesta = input(
@@ -169,10 +164,6 @@ def ejecutar_comando_voz():
     # ==========================================
     # 2.5 DETECCIÓN TEMPRANA DE SALIDA
     # ==========================================
-    #
-    # Si el usuario pidió salir, se corta el flujo aquí mismo:
-    # no tiene sentido gastar una consulta a Gemma solo para
-    # interpretar una intención de cierre.
 
     if texto.strip().lower() in VOICE_EXIT_KEYWORDS:
 
