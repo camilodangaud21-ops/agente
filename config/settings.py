@@ -108,3 +108,13 @@ GRAFO_SIMPLE_PATH = "data/output/grafo.graphml"
 GRAFO_CONOCIMIENTO_PATH = "data/output/grafo_conocimiento.graphml"
 
 REPORT_OUTPUT = "data/output/informe_voz.pdf"
+
+# ==========================================
+# OBSIDIAN
+# ==========================================
+
+# Carpeta que se utilizará como Vault de Obsidian.
+# Se puede cambiar por una ruta absoluta de Windows si ya tienes
+# un Vault existente, por ejemplo:
+# OBSIDIAN_VAULT_PATH = r"C:\\Users\\HP\\Documents\\MiVault"
+OBSIDIAN_VAULT_PATH = "data/output/obsidian_vault"
